@@ -8,4 +8,4 @@ access_token = 'eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.e
 # DATABASE_URL = "postgresql://postgres:123456@localhost/db_dubba"
 # SECRET_KEY = "8586493dc97a4f44a7677c23a81fd150"
 # ALGORITHM = "HS256"
-DATABASE_URL = "postgresql://doadmin:AVNS_moTgWBtSoZWmfPEorpy@db-postgresql-blr1-14363-etrd-do-user-15577781-0.c.db.ondigitalocean.com/defaultdb"
+DATABASE_URL = "postgresql://doadmin:AVNS_moTgWBtSoZWmfPEorpy@db-postgresql-blr1-14363-etrd-do-user-15577781-0.c.db.ondigitalocean.com:25060/defaultdb"

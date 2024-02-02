@@ -60,7 +60,7 @@ async def create_order(request:Request,payload:order):
             "transaction_type":"DR",
             # "created_by" :request.state.user_id
         }
-        await create_transaction(transaction_detail)
+        await create_transaction(**transaction_detail)
         return {"data":{"message":"order succesfull", "order_id":response}}
     except Exception as e:
         print(e)
@@ -85,7 +85,7 @@ async def update_order(request:Request,payload:order,order_id:int):
             "transaction_type":"CR",
             # "created_by" :request.state.user_id
         }
-        await create_transaction(transaction_detail)
+        await create_transaction(**transaction_detail)
         return {"data":{"message":"order closed succesfull", "order_id":response}}
     except Exception as e:
         raise HTTPException(status_code=404, detail="Item not found")

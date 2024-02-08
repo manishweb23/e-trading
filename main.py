@@ -26,6 +26,9 @@ app.include_router(limit.router)
 from endpoints import instrument
 app.include_router(instrument.router)
 
+from endpoints import watchlist
+app.include_router(watchlist.router)
+
 
 @app.get("/")
 async def root():

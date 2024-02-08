@@ -4,17 +4,15 @@ from typing import Optional
 from models.limit_model import create_limit, update_limit, fetch_limit
 
 
-
-class limit(BaseModel):
-    user_id: int
-    amount: Optional[float] = None
-
-
 router = APIRouter(
     prefix="/api/v1",
     tags=["limit"],
     responses={404: {"description": "Not found"}},
 )
+
+class limit(BaseModel):
+    user_id: int
+    amount: Optional[float] = None
 
 
 @router.post("/limit")

@@ -131,10 +131,82 @@ async def fetch_instrument_all(instrument_type):
     return res
 
 
-async def filter_instrument(symbol):
+async def filter_instrument(symbol,expiry):
     # Execute a raw SQL query
-    sql_query = text("SELECT * FROM tbl_instruments WHERE tradingsymbol LIKE :symbol")
+    sql_query = text("SELECT * FROM tbl_instruments WHERE tradingsymbol LIKE :symbol and expiry = :expiry")
+    result = connection.execute(sql_query, {'symbol':'%'+symbol+'%', 'expiry':expiry})
+
+    # Fetch the results
+    rows = result.fetchall()
+
+    # Close the result and engine
+    res = [list(row) for row in rows]
+    # Close the result and engine
+    return res
+
+
+async def filter_instrument_expiry(symbol):
+    # Execute a raw SQL query
+    sql_query = text("""
+            select
+                expiry
+            from
+                tbl_instruments
+            where
+                tradingsymbol like :symbol
+                and TO_DATE(expiry,
+                'YYYY-MM-DD') >= CURRENT_DATE
+            group by
+                expiry
+            order by
+                expiry;
+    """)
     result = connection.execute(sql_query, {'symbol':symbol+'%'})
+
+    # Fetch the results
+    rows = result.fetchall()
+
+    # Close the result and engine
+    res = [list(row)[0] for row in rows]
+    # Close the result and engine
+    return res
+
+
+
+async def filter_instrument_name(name):
+    # Execute a raw SQL query
+    sql_query = text("""
+            select
+                *
+            from
+                tbl_instruments
+            where
+                name like :name 
+                and name is not null
+            order by
+                name;
+    """)
+    result = connection.execute(sql_query, {'name':'%'+name+'%'})
+
+    # Fetch the results
+    rows = result.fetchall()
+
+    # Close the result and engine
+    res = [list(row) for row in rows]
+    # Close the result and engine
+    return res
+
+async def filter_instrument_all(limit:int=10,offset:int=0):
+    # Execute a raw SQL query
+    sql_query = text("""
+            select
+                *
+            from
+                tbl_instruments
+            order by name
+                     limit :limit offset :offset;
+    """)
+    result = connection.execute(sql_query, {'limit':limit,'offset':offset})
 
     # Fetch the results
     rows = result.fetchall()

@@ -46,3 +46,17 @@ async def fetch_transaction(user_id):
     except Exception as e:
         # Handle exceptions, log the error, or return an empty list based on your requirements
         return e
+    
+
+
+async def fetch_balance(user_id):
+    try:
+        sql_query = text("SELECT SUM(CASE WHEN transaction_type = 'CR' THEN amount WHEN transaction_type = 'DR' THEN -amount ELSE 0 END) AS available_balance FROM tbl_transaction WHERE user_id = :user_id")
+        result = connection.execute(sql_query, {'user_id':user_id})
+
+        # Fetch the results
+        available_balance = result.fetchone()
+        return available_balance[0]
+    except Exception as e:
+        # Handle exceptions, log the error, or return an empty list based on your requirements
+        return e

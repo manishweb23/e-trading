@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from utils import get_ltp
 from models.order_model import open_order, close_order, fetch_all_filtered_orders, fetch_single_orders   
-from models.transaction_model import create_transaction
+from models.transaction_model import create_transaction, fetch_balance
 import datetime
 
 
@@ -50,6 +50,10 @@ async def create_order(request:Request,payload:order):
         for k in ltp_data['data'].keys():
             ltp = ltp_data['data'][k]['last_price']
         payload['open_price'] = ltp
+        # validate with balance
+        balance = await fetch_balance(payload['user_id'])
+        if balance-payload['quantity']*payload['lot_size']*ltp < 0:
+            return {"data":{"message":"Insuficeint balance!"}}
         payload['open_time'] = str(datetime.datetime.now())
         response = await open_order(**payload)
         transaction_detail = {

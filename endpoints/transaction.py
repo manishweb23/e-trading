@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
-from models.transaction_model import create_transaction, fetch_transaction
+from models.transaction_model import create_transaction, fetch_transaction, fetch_balance
 
 router = APIRouter(
     prefix="/api/v1",
@@ -28,3 +28,7 @@ async def get_user_transaction(request:Request,user_id:int):
     response = await fetch_transaction(user_id)
     return {"data":response}
 
+@router.get("/transaction/user/{user_id}/balance")
+async def get_user_balance(request:Request,user_id:int):
+    response = await fetch_balance(user_id)
+    return {"data":{"balance":response}}

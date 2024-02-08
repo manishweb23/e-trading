@@ -5,6 +5,7 @@ from utils import get_ltp
 from models.order_model import open_order, close_order, fetch_all_filtered_orders, fetch_single_orders   
 from models.transaction_model import create_transaction, fetch_balance
 import datetime
+from typing import List
 
 
 router = APIRouter(
@@ -16,7 +17,7 @@ router = APIRouter(
 class filter_order(BaseModel):
     order_id: Optional[int] = None
     user_id: Optional[int] = None
-    symbol: list[str]
+    symbol: List[str]
     exchange: Optional[str] = None
     trade_type: Optional[str] = None
     expiry_date: Optional[str] = None

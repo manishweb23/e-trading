@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradingView Embed for All Symbols</title>
+    <!-- TradingView Charting Library -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+    <!-- Container for TradingView charts -->
+    <div id="tv-charts-container"></div>
+
+    <script>
+        // List of symbols
+        const symbols = [
+            "INDIA PESTICIDES LIMITED"// Add more symbols as needed
+        ];
+
+        // Loop through symbols and generate TradingView embed codes
+        symbols.forEach(symbol => {
+            const chartContainerId = `tv-chart-${symbol}`;
+
+            // Create container for each chart
+            const chartContainer = document.createElement("div");
+            chartContainer.id = chartContainerId;
+            document.getElementById("tv-charts-container").appendChild(chartContainer);
+
+            // Generate TradingView chart embed code
+            new TradingView.widget({
+                "width": 800,
+                "height": 400,
+                "symbol": symbol,
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "container_id": chartContainerId
+            });
+        });
+    </script>
+</body>
+</html>

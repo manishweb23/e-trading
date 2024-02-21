@@ -6,7 +6,6 @@ from utils import verify_token, public_url
 
 app = FastAPI(title="e-trading")
 
-
 @app.middleware("http")
 async def custom_middleware(request: Request, call_next):
     # Code to be executed before the request is processed by the route handler
@@ -36,7 +35,6 @@ async def custom_middleware(request: Request, call_next):
     print("After request")
 
     return response
-
 
 # Enable CORS
 app.add_middleware(

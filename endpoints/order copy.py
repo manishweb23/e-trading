@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Request, HTTPException, Depends
-from fastapi.security import HTTPBearer
+from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from utils import get_ltp, get_market_quotes, find_ask_price, find_bid_price
+from utils import get_ltp
 from models.order_model import open_order, close_order, fetch_all_filtered_orders, fetch_single_orders   
 from models.transaction_model import create_transaction, fetch_balance
 import datetime
@@ -32,7 +31,6 @@ class order(BaseModel):
     trading_symbol: Optional[str] = None
     exchange: Optional[str] = None
     trade_type: Optional[str] = None
-    equity_short: Optional[bool] = False
     expiry_date: Optional[str] = None
     open_price: Optional[float] = None
     close_price: Optional[float] = None
@@ -50,26 +48,19 @@ class order(BaseModel):
 async def create_order(request:Request,payload:order):
     payload = payload.dict()
     try:
-        quote_data = await get_market_quotes(payload['symbol'])
-        
-        for k in quote_data['data'].keys():
-            if payload['equity_short'] is False:
-                sell_data = quote_data['data'][k]['depth']['sell']
-                open_price = find_ask_price(sell_data)  
-            else:
-                buy_data = quote_data['data'][k]['depth']['buy']
-                open_price = find_ask_price(buy_data) 
-
-        payload['open_price'] = open_price
+        ltp_data = await get_ltp(payload['symbol'])
+        for k in ltp_data['data'].keys():
+            ltp = ltp_data['data'][k]['last_price']
+        payload['open_price'] = ltp
         # validate with balance
-        balance = await fetch_balance(request.state.user_id)
-        if balance-payload['quantity']*payload['lot_size']*open_price < 0:
+        balance = await fetch_balance(payload['user_id'])
+        if balance-payload['quantity']*payload['lot_size']*ltp < 0:
             return {"data":{"message":"Insuficeint balance!", "balance":balance}}
         payload['open_time'] = str(datetime.datetime.now())
         response = await open_order(**payload)
         transaction_detail = {
-            "amount": open_price * payload['quantity'] * payload['lot_size'],
-            "user_id": request.state.user_id,
+            "amount": ltp * payload['quantity'] * payload['lot_size'],
+            "user_id": payload['user_id'],
             "for_id":response,
             "transaction_for":"open_order",
             "transaction_type":"DR",
@@ -79,7 +70,7 @@ async def create_order(request:Request,payload:order):
         return {"data":{"message":"order succesfull", "order_id":response}}
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=404, detail=e)
+        raise HTTPException(status_code=404, detail="Item not found")
 
 
 @router.put("/order/{order_id}")
@@ -92,30 +83,26 @@ async def update_order(request:Request,payload:order,order_id:int):
         open_order_quantity = i.quantity
         open_order_lot_size = i.lot_size
     try:
-        quote_data = await get_market_quotes(payload['symbol'])
-        for k in quote_data['data'].keys():
-            if payload['equity_short'] is False:
-                buy_data = quote_data['data'][k]['depth']['buy']
-                close_price = find_ask_price(buy_data)  
-            else:
-                sell_data = quote_data['data'][k]['depth']['sell']
-                close_price = find_ask_price(sell_data) 
-
-        payload['close_price'] = close_price
+        ltp_data = await get_ltp(payload['symbol'])
+        print("ltp-data-manish")
+        print(ltp_data)
+        for k in ltp_data['data'].keys():
+            ltp = ltp_data['data'][k]['last_price']
+        payload['close_price'] = ltp
         payload['close_time'] = str(datetime.datetime.now())
         response = await close_order(order_id,**payload)
         transaction_detail = {
-            "amount": close_price * open_order_quantity * open_order_lot_size,
-            "user_id": request.state.user_id,
+            "amount": ltp * open_order_quantity * open_order_lot_size,
+            "user_id": payload['user_id'],
             "for_id":response,
             "transaction_for":"close_order",
             "transaction_type":"CR",
-            "created_by" :request.state.user_id
+            # "created_by" :request.state.user_id
         }
         await create_transaction(**transaction_detail)
         return {"data":{"message":"order closed succesfull", "order_id":response}}
     except Exception as e:
-        raise HTTPException(status_code=404, detail=e)
+        raise HTTPException(status_code=404, detail="Item not found")
 
 
 @router.get("/order/{order_id}")

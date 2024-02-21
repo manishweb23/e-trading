@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, text
+from sqlalchemy import Column, Integer, String, Float, text,desc,Boolean
 from db_config import Base, db, connection, engine
 
 
@@ -7,8 +7,10 @@ class Order(Base):
     id = Column(Integer, primary_key=True ,index=True)
     user_id = Column(Integer, index=True)
     symbol = Column(String, index=True)
+    trading_symbol = Column(String, index=True)
     exchange = Column(String)
     trade_type = Column(String)
+    equity_short = Column(Boolean, default=False, nullable=True)
     expiry_date = Column(String, nullable=True)
     open_price = Column(Float, nullable=True)
     close_price = Column(Float, nullable=True)
@@ -31,8 +33,10 @@ async def open_order(**payload):
         new_trade = Order(
             user_id=payload['user_id'],
             symbol=payload['symbol'],
+            trading_symbol=payload['trading_symbol'],
             exchange=payload['exchange'],
             trade_type=payload['trade_type'],
+            equity_short=payload['equity_short'],
             expiry_date=payload['expiry_date'],
             open_price=payload['open_price'],
             stop_loss=payload['stop_loss'],
@@ -59,14 +63,13 @@ async def close_order(order_id: int, **payload):
         if existing_order:
             # Update the fields with the new values from the payload
             existing_order.close_price = payload.get('close_price', existing_order.close_price)
-            # existing_order.quantity = payload.get('quantity', existing_order.quantity)
-            # existing_order.lot_size = payload.get('lot_size', existing_order.lot_size)
             existing_order.close_time = payload.get('close_time', existing_order.close_time)
 
             # Commit the changes to the database
             db.commit()
             trade_id =existing_order.id
             db.close()
+            print(trade_id)
             return trade_id
         else:
             return False
@@ -103,10 +106,10 @@ async def fetch_all_filtered_orders(type,user_id):
     try:
         if type == 'open':
             # Query orders with a specific symbol
-            filtered_orders = db.query(Order).filter(Order.user_id == user_id, Order.close_price == None).all()
+            filtered_orders = db.query(Order).filter(Order.user_id == user_id, Order.close_price == None).order_by(desc(Order.id)).all()
         if type == 'close':
             # Query orders with a specific symbol
-            filtered_orders = db.query(Order).filter(Order.user_id == user_id, Order.close_price != None).all()
+            filtered_orders = db.query(Order).filter(Order.user_id == user_id, Order.close_price != None).order_by(desc(Order.id)).all()
         if type == 'all':
             # Query orders with a specific symbol
             filtered_orders = db.query(Order).filter(Order.user_id == user_id).all()
@@ -118,11 +121,20 @@ async def fetch_all_filtered_orders(type,user_id):
         return e
     
 
-async def fetch_instrument_all(instrument_type):
+async def fetch_instrument_all(instrument_type,name,limit,offset):
     # Execute a raw SQL query
-    sql_query = text("SELECT * FROM view_instruments where instrument_type=:instrument_type ")
-    print(sql_query)
-    result = connection.execute(sql_query,{'instrument_type':instrument_type})
+    sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type  limit :limit offset :offset")
+    if instrument_type[0] == 'O':
+        sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type  AND TO_DATE(expiry,'YYYY-MM-DD') >= CURRENT_DATE limit :limit offset :offset")
+    filter_data = {'instrument_type': instrument_type+'%', 'limit':limit, 'offset':offset}
+    if name != None:
+        sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) limit :limit offset :offset")
+
+        if instrument_type[0] == 'O':
+            sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) AND TO_DATE(expiry,'YYYY-MM-DD') >= CURRENT_DATE limit :limit offset :offset")
+
+        filter_data = {'instrument_type': instrument_type+'%','name':'%'+name+'%', 'tradingsymbol':'%'+name+'%','limit':limit, 'offset':offset}
+    result = connection.execute(sql_query,filter_data)
     # Fetch the results
     rows = result.fetchall()
     # print(rows)
@@ -173,7 +185,7 @@ async def filter_instrument_expiry(symbol):
 
 
 
-async def filter_instrument_name(name):
+async def filter_instrument_name(name, limit, offset):
     # Execute a raw SQL query
     sql_query = text("""
             select
@@ -184,9 +196,10 @@ async def filter_instrument_name(name):
                 name like :name 
                 and name is not null
             order by
-                name;
+                name
+            limit :limit offset :offset;
     """)
-    result = connection.execute(sql_query, {'name':'%'+name+'%'})
+    result = connection.execute(sql_query, {'name':'%'+name+'%', 'limit':limit, 'offset':offset})
 
     # Fetch the results
     rows = result.fetchall()
@@ -204,8 +217,8 @@ async def filter_instrument_all(limit:int=10,offset:int=0):
             from
                 tbl_instruments
             order by name
-                     limit :limit offset :offset;
-    """)
+                limit :limit offset :offset;
+        """)
     result = connection.execute(sql_query, {'limit':limit,'offset':offset})
 
     # Fetch the results

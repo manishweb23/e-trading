@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException, status  
 from pydantic import BaseModel
 from typing import Optional
-from utils import md5_hash
-from models.user_model import create_user, fetch_user
+from utils import md5_hash, create_token
+from models.user_model import create_user, fetch_user, fetch_user_login
+import jwt
+import config
+import time
+
 
 router = APIRouter(
     prefix="/api/v1",
@@ -23,10 +27,32 @@ async def new_user(request:Request,payload:user):
     return {"data":response}
 
 
+@router.post("/user/login")
+async def get_user_login(request:Request, payload: user):
+    payload = payload.dict()
+    try:
+        response = await fetch_user_login(payload['mobile'], md5_hash(payload['password']))
+        response = response.__dict__
+
+        if response['is_active'] == False:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User is inactive!")
+
+        token = await create_token(**response)
+        response = {
+            "user_id":response['id'],
+            "name":response['name'],
+            "token":token,
+            "next":'/dashboard'
+        }
+        return {"data":response}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalide Credetials!")
+
+
 @router.get("/user/{id}")
 async def get_user(request:Request,id:int):
     response = await fetch_user(id)
-    # response.pop('password')
     response = response.__dict__
     del response['password']
     return {"data":response}

@@ -9,4 +9,4 @@ access_token = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.e
 SECRET_KEY = "8586493dc97a4f44a7677c23a81fd150"
 ALGORITHM = "HS256"
 
-DATABASE_URL = "postgresql://postgres:123123@localhost:5432/db_dubba"
+DATABASE_URL = "postgresql://postgres:123123@127.0.0.1:5432/:5432/db_dubba"

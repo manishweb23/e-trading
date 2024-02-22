@@ -9,4 +9,12 @@ access_token = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.e
 SECRET_KEY = "8586493dc97a4f44a7677c23a81fd150"
 ALGORITHM = "HS256"
 
-DATABASE_URL = "postgresql://doadmin:AVNS_-YtwVSF3KJKWBpVMt-k@db-postgresql-blr1-39916-do-user-6620209-0.c.db.ondigitalocean.com:25060/defaultdb"
+DATABASE_URL = "postgresql://doadmin:AVNS_Vup-iqX_aat5zbfWH_f@db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com:25060/defaultdb"
+
+
+# username = doadmin
+# password = AVNS_Vup-iqX_aat5zbfWH_f
+# host = db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com
+# port = 25060
+# database = defaultdb
+# sslmode = require

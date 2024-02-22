@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, text,desc,Boolean
+from sqlalchemy import Column, Integer, String, Float, text,desc,Boolean,func
 from db_config import Base, db, connection, engine
 
 
@@ -111,6 +111,7 @@ async def fetch_all_filtered_orders(type,user_id):
             # Query orders with a specific symbol
             filtered_orders = db.query(Order).filter(Order.user_id == user_id, Order.close_price != None).order_by(desc(Order.id)).all()
         if type == 'all':
+            print("all order")
             # Query orders with a specific symbol
             filtered_orders = db.query(Order).filter(Order.user_id == user_id).all()
 
@@ -120,6 +121,22 @@ async def fetch_all_filtered_orders(type,user_id):
         # Handle exceptions, log the error, or return an empty list based on your requirements
         return e
     
+
+async def fetch_all_filtered_orders_count(type,user_id):
+    try:
+        if type == 'open':
+            # Query orders with a specific symbol
+            filtered_orders = db.query(func.count(func.distinct(Order.id))).filter(Order.user_id == user_id, Order.close_price == None).scalar()
+        if type == 'close':
+            filtered_orders = db.query(func.count(func.distinct(Order.id))).filter(Order.user_id == user_id, Order.close_price != None).scalar()
+        if type == 'all':
+            filtered_orders = db.query(func.count(func.distinct(Order.id))).filter(Order.user_id == user_id).scalar()
+
+        # You can now use the 'filtered_orders' list
+        return filtered_orders
+    except Exception as e:
+        # Handle exceptions, log the error, or return an empty list based on your requirements
+        return e
 
 async def fetch_instrument_all(instrument_type,name,limit,offset):
     # Execute a raw SQL query

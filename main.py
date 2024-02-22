@@ -41,7 +41,7 @@ async def custom_middleware(request: Request, call_next):
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://139.59.39.167/"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

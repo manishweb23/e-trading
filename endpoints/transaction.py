@@ -34,6 +34,6 @@ async def get_user_balance(request:Request,user_id:int):
     return {"data":{"balance":response}}
 
 @router.get("/transaction/user/{user_id}/pl")
-async def get_user_balance(request:Request,user_id:int):
+async def get_user_pl(request:Request,user_id:int):
     response = await fetch_balance(user_id)
     return {"data":{"balance":response}}

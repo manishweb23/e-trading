@@ -12,13 +12,15 @@ async def custom_middleware(request: Request, call_next):
     print("Before request")
     req_url = str(request.url).split("/")
     print(req_url)
+    docs_url = req_url[3]
+    open_json = req_url[3]
     try:
         inst_url = req_url[5]
         print(inst_url)
     except Exception:
         inst_url = None
     req_url = "/".join(req_url[5:])
-    if req_url not in public_url and inst_url != 'instrument':
+    if req_url not in public_url and inst_url != 'instrument' and docs_url != 'docs' and open_json != 'openapi.json':
         try:
             token_data = await verify_token(request.headers)
             # request.state.user_id

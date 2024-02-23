@@ -6,19 +6,7 @@ from utils import verify_token, public_url
 
 app = FastAPI(title="e-trading")
 
-origins = [
-    "http://139.59.39.167:3000",
-    "http://localhost",
-    "http://localhost:3000",
-]
-# Enable CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
-)
+
 
 
 @app.middleware("http")
@@ -53,7 +41,19 @@ async def custom_middleware(request: Request, call_next):
 
     return response
 
-
+origins = [
+    "http://139.59.39.167:3000",
+    "http://localhost",
+    "http://localhost:3000",
+]
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 from endpoints import user
 app.include_router(user.router)

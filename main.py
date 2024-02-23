@@ -22,6 +22,7 @@ async def custom_middleware(request: Request, call_next):
         inst_url = None
     req_url = "/".join(req_url[5:])
     if req_url not in public_url and inst_url != 'instrument' and docs_url != 'docs' and open_json != 'openapi.json':
+        request.state.user_id = 1
         try:
             token_data = await verify_token(request.headers)
             # request.state.user_id
@@ -29,7 +30,6 @@ async def custom_middleware(request: Request, call_next):
                 request.state.user_id = token_data['id']
             else:
                 return JSONResponse(content={'data':{'message':'invalide token!'}}, status_code=401)
-            
         except Exception as e:
             print(e)
     response = await call_next(request)  # Pass the request to the next middleware or route handler
@@ -39,10 +39,16 @@ async def custom_middleware(request: Request, call_next):
 
     return response
 
+
+origins = [
+    "http://139.59.39.167:3000",
+    "http://localhost",
+    "http://localhost:3000",
+]
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

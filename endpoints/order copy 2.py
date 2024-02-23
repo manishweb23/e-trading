@@ -9,6 +9,7 @@ import datetime
 from typing import List
 
 
+
 router = APIRouter(
     prefix="/api/v1",
     tags=["order"],
@@ -48,8 +49,8 @@ class order(BaseModel):
 
 @router.post("/order")
 async def create_order(request:Request,payload:order):
-        payload = payload.dict()
-    # try:
+    payload = payload.dict()
+    try:
         quote_data = await get_market_quotes(payload['symbol'])
         
         for k in quote_data['data'].keys():
@@ -77,9 +78,10 @@ async def create_order(request:Request,payload:order):
         }
         await create_transaction(**transaction_detail)
         return {"data":{"message":"order succesfull", "order_id":response}}
-    # except Exception as e:
-    #     print(e)
-    #     raise HTTPException(status_code=404, detail=e)
+    except Exception as e:
+        print("manisj--gg")
+        print(e)
+        raise HTTPException(status_code=404, detail=e)
 
 
 @router.put("/order/{order_id}")

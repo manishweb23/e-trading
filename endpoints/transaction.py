@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
+from typing import Optional
 from models.transaction_model import create_transaction, fetch_transaction, fetch_balance
 
 router = APIRouter(
@@ -11,7 +12,7 @@ router = APIRouter(
 class transaction(BaseModel):
     user_id:int
     amount:float
-    for_id:int
+    for_id:Optional[int]=None
     transaction_for:str
     transaction_type:str
 

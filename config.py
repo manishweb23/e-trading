@@ -12,7 +12,7 @@ ALGORITHM = "HS256"
 
 DATABASE_URL = "postgresql://doadmin:AVNS_Vup-iqX_aat5zbfWH_f@db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com:25060/defaultdb"
 
-
+   
 # username = doadmin
 # password = AVNS_Vup-iqX_aat5zbfWH_f
 # host = db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com

@@ -65,7 +65,7 @@ async def fetch_balance(user_id):
 
 async def fetch_trading_balance(user_id):
     try:
-        sql_query = text("SELECT SUM(CASE WHEN transaction_type = 'CR' THEN amount WHEN transaction_type = 'DR' THEN -amount ELSE 0 END) AS available_balance FROM tbl_transaction WHERE user_id = :user_id and transaction_for != 'addbalance' and transaction_for != 'withdraw'")
+        sql_query = text("SELECT SUM(CASE WHEN transaction_type = 'DR' THEN amount WHEN transaction_type = 'CR' THEN -amount ELSE 0 END) AS available_balance FROM tbl_transaction WHERE user_id = :user_id and transaction_for != 'addbalance' and transaction_for != 'withdraw'")
         result = connection.execute(sql_query, {'user_id':user_id})
 
         # Fetch the results

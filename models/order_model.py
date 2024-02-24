@@ -122,6 +122,19 @@ async def fetch_all_filtered_orders(type,user_id):
         return e
     
 
+async def fetch_trading_balance(user_id):
+    try:
+        sql_query = text("SELECT SUM(open_price) AS available_balance FROM tbl_order WHERE user_id = :user_id and close_price is null")
+        result = connection.execute(sql_query, {'user_id':user_id})
+
+        # Fetch the results
+        available_balance = result.fetchone()
+        return available_balance[0]
+    except Exception as e:
+        # Handle exceptions, log the error, or return an empty list based on your requirements
+        return e
+    
+
 async def fetch_all_filtered_orders_count(type,user_id):
     try:
         if type == 'open':

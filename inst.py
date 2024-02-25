@@ -1,5 +1,6 @@
 import pandas as pd
 from sqlalchemy import create_engine
+from datetime import datetime
 
 # Define the database connection string
 # Replace 'username', 'password', 'hostname', 'port', and 'database_name' with your database credentials
@@ -27,6 +28,10 @@ df.rename(columns={
     'Option Type': 'option_type',
     'Exchange': 'exchange'
 }, inplace=True)
+
+# Add primary key field and created_date field
+df['primary_key'] = range(1, len(df) + 1)  # Generating primary key values
+df['created_date'] = datetime.now()        # Adding current datetime as created_date
 
 # Insert data into the PostgreSQL database table
 df.to_sql('tbl_instruments', engine, if_exists='append', index=False)

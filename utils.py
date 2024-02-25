@@ -10,7 +10,7 @@ import time
 
 
 def create_instruments():
-    url = "https://assets.upstox.com/market-quote/instruments/exchange/NSE.csv.gz"
+    url = "https://assets.upstox.com/market-quote/instruments/exchange/complete.csv.gz"
     output_file_path = "NSE.csv"
 
     # Download the gzip file

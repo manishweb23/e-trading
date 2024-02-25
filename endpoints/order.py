@@ -58,7 +58,7 @@ async def create_order(request:Request,payload:order):
                 open_price = find_ask_price(sell_data)  
             else:
                 buy_data = quote_data['data'][k]['depth']['buy']
-                open_price = find_ask_price(buy_data) 
+                open_price = find_bid_price(buy_data) 
 
         payload['open_price'] = open_price
         # validate with balance
@@ -99,7 +99,7 @@ async def update_order(request:Request,payload:order,order_id:int):
                 close_price = find_ask_price(buy_data)  
             else:
                 sell_data = quote_data['data'][k]['depth']['sell']
-                close_price = find_ask_price(sell_data) 
+                close_price = find_bid_price(sell_data) 
 
         payload['close_price'] = close_price
         payload['close_time'] = str(datetime.datetime.now())

@@ -10,7 +10,7 @@ class Order(Base):
     trading_symbol = Column(String, index=True)
     exchange = Column(String)
     trade_type = Column(String)
-    equity_short = Column(Boolean, default=False, nullable=True)
+    order_short = Column(Boolean, default=False, nullable=True)
     expiry_date = Column(String, nullable=True)
     open_price = Column(Float, nullable=True)
     close_price = Column(Float, nullable=True)
@@ -36,7 +36,7 @@ async def open_order(**payload):
             trading_symbol=payload['trading_symbol'],
             exchange=payload['exchange'],
             trade_type=payload['trade_type'],
-            equity_short=payload['equity_short'],
+            order_short=payload['order_short'],
             expiry_date=payload['expiry_date'],
             open_price=payload['open_price'],
             stop_loss=payload['stop_loss'],

@@ -32,7 +32,7 @@ class order(BaseModel):
     trading_symbol: Optional[str] = None
     exchange: Optional[str] = None
     trade_type: Optional[str] = None
-    equity_short: Optional[bool] = False
+    order_short: Optional[bool] = False
     expiry_date: Optional[str] = None
     open_price: Optional[float] = None
     close_price: Optional[float] = None
@@ -48,12 +48,12 @@ class order(BaseModel):
 
 @router.post("/order")
 async def create_order(request:Request,payload:order):
-        payload = payload.dict()
-    # try:
+    payload = payload.dict()
+    try:
         quote_data = await get_market_quotes(payload['symbol'])
         
         for k in quote_data['data'].keys():
-            if payload['equity_short'] is False:
+            if payload['order_short'] is False:
                 sell_data = quote_data['data'][k]['depth']['sell']
                 open_price = find_ask_price(sell_data)  
             else:
@@ -77,9 +77,9 @@ async def create_order(request:Request,payload:order):
         }
         await create_transaction(**transaction_detail)
         return {"data":{"message":"order succesfull", "order_id":response}}
-    # except Exception as e:
-    #     print(e)
-    #     raise HTTPException(status_code=404, detail=e)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=404, detail=e)
 
 
 @router.put("/order/{order_id}")
@@ -94,7 +94,7 @@ async def update_order(request:Request,payload:order,order_id:int):
     try:
         quote_data = await get_market_quotes(payload['symbol'])
         for k in quote_data['data'].keys():
-            if payload['equity_short'] is False:
+            if payload['order_short'] is False:
                 buy_data = quote_data['data'][k]['depth']['buy']
                 close_price = find_ask_price(buy_data)  
             else:

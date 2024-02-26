@@ -119,7 +119,8 @@ async def fetch_all_filtered_orders(type,user_id):
         return filtered_orders
     except Exception as e:
         # Handle exceptions, log the error, or return an empty list based on your requirements
-        return e
+        print(e)
+        return {'data':{'message':'something went wrong!'}}
     
 
 async def fetch_trading_balance(user_id):

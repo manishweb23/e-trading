@@ -131,8 +131,12 @@ async def get_filter_order(request:Request,user_id:int, order_type:str):
     return {"data":all_order}
 
 @router.get("/order/filter/user/{user_id}/intraday/{is_intraday}")
-async def get_filter_order(request:Request,user_id:int, order_type:str,is_intraday:bool=False):
-    all_order = await fetch_all_filtered_intraday_delivery_orders(is_intraday,user_id)
+async def get_filter_order(request:Request,user_id:int, order_type:str,is_intraday:str):
+    if is_intraday == 'True':
+        set_intraday = True
+    else:
+        set_intraday = False
+    all_order = await fetch_all_filtered_intraday_delivery_orders(set_intraday,user_id)
     return {"data":all_order}
 
 

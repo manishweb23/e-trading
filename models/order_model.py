@@ -132,7 +132,7 @@ async def fetch_trading_balance(user_id):
         available_balance = 0
         balance_data = result.fetchall()
         for balance in balance_data:
-            available_balance = available_balance + balance[8]
+            available_balance = available_balance + balance[8]*balance[13]*balance[14]
         print(available_balance)
         return available_balance
     except Exception as e:

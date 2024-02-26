@@ -33,7 +33,7 @@ class order(BaseModel):
     exchange: Optional[str] = None
     trade_type: Optional[str] = None
     order_short: Optional[bool] = False
-    intraday: Optional[bool] = False
+    is_intraday: Optional[bool] = False
     expiry_date: Optional[str] = None
     open_price: Optional[float] = None
     close_price: Optional[float] = None

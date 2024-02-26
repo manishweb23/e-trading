@@ -125,12 +125,16 @@ async def fetch_all_filtered_orders(type,user_id):
 
 async def fetch_trading_balance(user_id):
     try:
-        sql_query = text("SELECT SUM(open_price) AS available_balance FROM tbl_order WHERE user_id = :user_id and close_price is null")
+        sql_query = text("SELECT * FROM tbl_order WHERE user_id = :user_id and close_price is null")
         result = connection.execute(sql_query, {'user_id':user_id})
 
         # Fetch the results
-        available_balance = result.fetchone()
-        return available_balance[0]
+        available_balance = 0
+        balance_data = result.fetchall()
+        for balance in balance_data:
+            available_balance = available_balance + balance[8]
+        print(available_balance)
+        return available_balance
     except Exception as e:
         # Handle exceptions, log the error, or return an empty list based on your requirements
         return e

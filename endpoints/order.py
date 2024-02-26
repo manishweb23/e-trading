@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from typing import Optional
 from utils import get_ltp, get_market_quotes, find_ask_price, find_bid_price
-from models.order_model import open_order, close_order, fetch_all_filtered_orders, fetch_single_orders, fetch_all_filtered_orders_count, fetch_trading_balance
+from models.order_model import open_order, close_order, fetch_all_filtered_orders, fetch_single_orders, fetch_all_filtered_orders_count, fetch_trading_balance, fetch_all_filtered_intraday_delivery_orders
 from models.transaction_model import create_transaction, fetch_balance
 import datetime
 from typing import List
@@ -128,6 +128,11 @@ async def get_single_order(request:Request,order_id:int):
 @router.get("/order/filter/user/{user_id}/type/{order_type}")
 async def get_filter_order(request:Request,user_id:int, order_type:str):
     all_order = await fetch_all_filtered_orders(order_type,user_id)
+    return {"data":all_order}
+
+@router.get("/order/filter/user/{user_id}/intraday/{is_intraday}")
+async def get_filter_order(request:Request,user_id:int, order_type:str,is_intraday:bool=False):
+    all_order = await fetch_all_filtered_intraday_delivery_orders(is_intraday,user_id)
     return {"data":all_order}
 
 

@@ -125,6 +125,17 @@ async def fetch_all_filtered_orders(type,user_id):
         return {'data':{'message':'something went wrong!'}}
     
 
+async def fetch_all_filtered_intraday_delivery_orders(is_intraday,user_id):
+    try:
+        # Query orders with a specific symbol
+        filtered_orders = db.query(Order).filter(Order.user_id == user_id, Order.close_price == None, Order.is_intraday == is_intraday).order_by(desc(Order.id)).all()
+        return filtered_orders
+    except Exception as e:
+        # Handle exceptions, log the error, or return an empty list based on your requirements
+        print(e)
+        return {'data':{'message':'something went wrong!'}}
+
+
 async def fetch_trading_balance(user_id):
     try:
         sql_query = text("SELECT * FROM tbl_order WHERE user_id = :user_id and close_price is null")

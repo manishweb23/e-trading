@@ -11,6 +11,7 @@ class Order(Base):
     exchange = Column(String)
     trade_type = Column(String)
     order_short = Column(Boolean, default=False, nullable=True)
+    intraday = Column(Boolean, default=False, nullable=True)
     expiry_date = Column(String, nullable=True)
     open_price = Column(Float, nullable=True)
     close_price = Column(Float, nullable=True)
@@ -133,7 +134,6 @@ async def fetch_trading_balance(user_id):
         balance_data = result.fetchall()
         for balance in balance_data:
             available_balance = available_balance + balance[8]*balance[13]*balance[14]
-        print(available_balance)
         return available_balance
     except Exception as e:
         # Handle exceptions, log the error, or return an empty list based on your requirements

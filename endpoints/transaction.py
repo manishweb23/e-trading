@@ -24,10 +24,12 @@ async def new_transaction(request:Request,payload:transaction):
     response = await create_transaction(**payload)
     return {"data":response}
 
+
 @router.get("/transaction/user/{user_id}")
 async def get_user_transaction(request:Request,user_id:int):
     response = await fetch_transaction(user_id)
     return {"data":response}
+
 
 @router.get("/transaction/user/{user_id}/balance")
 async def get_user_balance(request:Request,user_id:int):

@@ -74,7 +74,7 @@ async def create_order(request:Request,payload:order):
             "for_id":response,
             "transaction_for":"open_order",
             "transaction_type":"DR",
-            # "created_by" :request.state.user_id
+            "created_by" :request.state.user_id
         }
         await create_transaction(**transaction_detail)
         return {"data":{"message":"order succesfull", "order_id":response}}

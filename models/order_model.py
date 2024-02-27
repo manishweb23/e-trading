@@ -183,10 +183,10 @@ async def fetch_instrument_all(instrument_type,name,limit,offset):
 
     # Execute a raw SQL query
     if instrument_type in ['INDEX','EQUITY']:
-        sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type  AND TO_DATE(created_date,'YYYY-MM-DD') >= CURRENT_DATE and is_active = TRUE limit :limit offset :offset")
+        sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type  and is_active = TRUE limit :limit offset :offset")
         filter_data = {'instrument_type': instrument_type, 'limit':limit, 'offset':offset}
         if name != None:
-            sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) AND TO_DATE(created_date,'YYYY-MM-DD') >= CURRENT_DATE and is_active = TRUE limit :limit offset :offset")
+            sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) and is_active = TRUE limit :limit offset :offset")
 
             filter_data = {'instrument_type': instrument_type,'name':'%'+name+'%', 'tradingsymbol':name+'%','limit':limit, 'offset':offset}
             

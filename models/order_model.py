@@ -172,17 +172,23 @@ async def fetch_all_filtered_orders_count(type,user_id):
 
 async def fetch_instrument_all(instrument_type,name,limit,offset):
     # Execute a raw SQL query
-    sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and option_type in ('CE','PE') and is_active = TRUE limit :limit offset :offset")
     if instrument_type in ['OPTIDX','OPTSTK','OPTCUR','OPTCOM','FUTIDX','FUTSTK','FUTCUR','FUTCOM']:
         sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type  and option_type in ('CE','PE') AND TO_DATE(expiry,'YYYY-MM-DD') >= CURRENT_DATE and is_active = TRUE limit :limit offset :offset")
-    filter_data = {'instrument_type': instrument_type, 'limit':limit, 'offset':offset}
-    if name != None:
-        sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) and option_type in ('CE','PE') and is_active = TRUE limit :limit offset :offset")
+        filter_data = {'instrument_type': instrument_type, 'limit':limit, 'offset':offset}
+        if name != None:
+            sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) and option_type in ('CE','PE') and is_active = TRUE limit :limit offset :offset")
 
-        if instrument_type in ['OPTIDX','OPTSTK','OPTCUR','OPTCOM','FUTIDX','FUTSTK','FUTCUR','FUTCOM']:
-            sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) and option_type in ('CE','PE') AND TO_DATE(expiry,'YYYY-MM-DD') >= CURRENT_DATE and is_active = TRUE limit :limit offset :offset")
+            filter_data = {'instrument_type': instrument_type,'name':'%'+name+'%', 'tradingsymbol':name+'%','limit':limit, 'offset':offset}
 
-        filter_data = {'instrument_type': instrument_type,'name':'%'+name+'%', 'tradingsymbol':name+'%','limit':limit, 'offset':offset}
+    # Execute a raw SQL query
+    if instrument_type in ['INDEX','EQUITY']:
+        sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type  AND TO_DATE(expiry,'YYYY-MM-DD') >= CURRENT_DATE and is_active = TRUE limit :limit offset :offset")
+        filter_data = {'instrument_type': instrument_type, 'limit':limit, 'offset':offset}
+        if name != None:
+            sql_query = text("SELECT * FROM tbl_instruments where instrument_type like :instrument_type and (name like :name or tradingsymbol like :tradingsymbol) and is_active = TRUE limit :limit offset :offset")
+
+            filter_data = {'instrument_type': instrument_type,'name':'%'+name+'%', 'tradingsymbol':name+'%','limit':limit, 'offset':offset}
+            
     result = connection.execute(sql_query,filter_data)
     # Fetch the results
     rows = result.fetchall()

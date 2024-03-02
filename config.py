@@ -10,7 +10,8 @@ access_token = "eyJ0eXAiOiJKV1QiLCJrZXlfaWQiOiJza192MS4wIiwiYWxnIjoiSFMyNTYifQ.e
 SECRET_KEY = "8586493dc97a4f44a7677c23a81fd150"
 ALGORITHM = "HS256"
 
-DATABASE_URL = "postgresql://doadmin:AVNS_Vup-iqX_aat5zbfWH_f@db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com:25060/defaultdb"
+# DATABASE_URL = "postgresql://doadmin:AVNS_Vup-iqX_aat5zbfWH_f@db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com:25060/defaultdb"
 
 # DATABASE_URL = "postgresql://doadmin:AVNS_Vup-iqX_aat5zbfWH_f@private-db-postgresql-blr1-96014-do-user-6620209-0.c.db.ondigitalocean.com:25060/defaultdb"
 
+DATABASE_URL = "postgresql://postgres:123456@139.59.59.31:5432/db_dubba"
